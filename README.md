@@ -14,12 +14,16 @@ Outage started 2015-03-13 22:06:12 -0400 (No route to host) and ended 2015-03-13
 Outage started 2015-03-13 22:06:32 -0400 (No route to host) and ended 2015-03-13 22:06:36 -0400
 ```
 
-In a separate shell session, you can `tail -f` the file to get output.
+In a separate process, you can `tail -f` the file to get output.
 
-Use netout to ping 1.2.3.4 and logs any problems pinging 1.2.3.4 (google-public-dns-a.google.com) to `outages_1.2.3.4.txt`:
+If you'd rather use netout to ping 10.0.0.1 and logs any problems pinging 10.0.0.1 to `outages_10.0.0.1.txt`:
 ```
-netout 1.2.3.4
+netout 10.0.0.1
 ```
+
+Note that the output of netout is not 100% accurate:
+* Long ping times (over 500ms by default) would be considered an outage, when they could just be higher latency.
+* The reason specified for the outage is only the first error that comes back from what is assumed to be a failed ping. If the reason for the outage changes over time, the new reasons aren't logged.
 
 ### How to use
 
