@@ -30,7 +30,6 @@ File.open(filename, 'a') {|f| f.write('')}
 while true
   IO.popen "ping -t500 #{opts} 2>&1" do |f|
     o = f.gets
-    #e.g. 64 bytes from 8.8.8.8: icmp_seq=2 ttl=54 time=28.191 ms
     spl = o.split(' ')
     if spl[0]=='PING'
     	if last_state==nil
@@ -46,6 +45,4 @@ while true
       File.open(filename, 'a') {|f| f.write("Outage started #{outage_at} (#{o.split(':').last.strip})")}
     end
   end
-  
-  sleep 1
 end
