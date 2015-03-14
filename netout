@@ -32,10 +32,10 @@ while true
     o = f.gets
     spl = o.split(' ')
     if spl[0]=='PING'
-    	if last_state==nil
-    	  last_state=0
-    	elsif last_state==1
-    	  File.open(filename, 'a') {|f| f.puts(" and ended #{Time.now}")}
+      if last_state==nil
+        last_state=0
+      elsif last_state==1
+        File.open(filename, 'a') {|f| f.puts(" and ended #{Time.now}")}
         outage_at=nil
         last_state=0
       end
