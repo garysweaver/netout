@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+
+# Netout - pings a host and logs outages to a file.
+# Copyright (C) 2015  Gary S. Weaver
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Usage: netout (options to send to ping using default: -t500 8.8.8.8)
+
+# v1.0.0 - released 2015-03-13
+
+opts=*ARGV.join(' ')
+opts='8.8.8.8' if opts.length==1
+last_state=nil
+outage_at=nil
+filename="outages_#{opts}.txt"
+puts "Watching for outages and writing them to #{filename} (ctrl-c to exit)"
+File.open(filename, 'a') {|f| f.write('')}
+while true
+  IO.popen "ping -t500 #{opts} 2>&1" do |f|
+    o = f.gets
+    #e.g. 64 bytes from 8.8.8.8: icmp_seq=2 ttl=54 time=28.191 ms
+    spl = o.split(' ')
+    if spl[0]=='PING'
+    	if last_state==nil
+    	  last_state=0
+    	elsif last_state==1
+    	  File.open(filename, 'a') {|f| f.puts(" and ended #{Time.now}")}
+        outage_at=nil
+        last_state=0
+      end
+    elsif last_state!=1
+      outage_at=Time.now
+      last_state=1
+      File.open(filename, 'a') {|f| f.write("Outage started #{outage_at} (#{o.split(':').last.strip})")}
+    end
+  end
+  
+  sleep 1
+end
